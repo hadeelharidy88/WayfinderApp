@@ -5,25 +5,25 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 
 # GCP LLM Configurations using Google API key and goog.egenerativeai
 # --------------------
-# import google.generativeai as genai
-# GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY", "xx")
-# GOOGLE_PROJECT = st.secrets.get("GOOGLE_PROJECT", "analog-grin-455718-i4")
-# GOOGLE_LOCATION = st.secrets.get("GOOGLE_LOCATION", "us-east1")
-# genai.configure(api_key=GOOGLE_API_KEY)
+import google.generativeai as genai
+GOOGLE_API_KEY = "AIzaSyATIUK_dvY0rg_FONGW1668--IwlMrFVyo"
+GOOGLE_PROJECT = "analog-grin-455718-i4"
+GOOGLE_LOCATION = "us-central1"
+genai.configure(api_key=GOOGLE_API_KEY)
 # --------------------
 
 # GCP LLM Configurations using local credentails works on GCP cloud run with google genai and google.auth
 # No need to store public key in code
 # --------------------
-from google import genai
-import google.auth
+# from google import genai
+# import google.auth
 
-credentials, project = google.auth.default()
+# credentials, project = google.auth.default()
 
-client = genai.Client(
-    credentials=credentials,
-    project="analog-grin-455718-i4"
-)
+# client = genai.Client(
+#     credentials=credentials,
+#     project="analog-grin-455718-i4"
+# )
 # --------------------
 
 model_name = "gemini-1.5-pro-002"
@@ -282,18 +282,18 @@ else:
                 try:
                     # Using gogle.generativeai package
                     # --------------------
-                    # client = genai.GenerativeModel(model_name)
-                    # response = client.generate_content(full_prompt)
-                    # answer = response.text.strip()
+                    client = genai.GenerativeModel(model_name)
+                    response = client.generate_content(full_prompt)
+                    answer = response.text.strip()
                     # --------------------
                     
                     # Using google.genai
                     # --------------------
-                    response = client.models.generate_content(
-                        model=model_name,
-                        contents=[full_prompt],
-                    )
-                    answer = response.text
+                    # response = client.models.generate_content(
+                    #     model=model_name,
+                    #     contents=[full_prompt],
+                    # )
+                    # answer = response.text
                     # --------------------
                     
                     if answer:
