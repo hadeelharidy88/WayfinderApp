@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from langchain_community.chat_message_histories import ChatMessageHistory
 
+from core import GitHubQA
 
 # GCP LLM Configurations using Google API key and goog.egenerativeai
 # --------------------
@@ -189,12 +190,19 @@ if "messages" not in st.session_state:
 show_chat_assistant = st.sidebar.checkbox("Show General Chat Assistant", False)
 
 # Add branding to sidebar
-st.sidebar.markdown("## WayFinder Helper")
-st.sidebar.markdown("### Chat Assistant")
-st.sidebar.markdown("Check the box above to show the project chat assistant.")
+st.sidebar.markdown("## WayFinder Chat")
+st.sidebar.markdown("Chat Assistant Agent")
+# st.sidebar.markdown("Check the box above to show the project chat assistant.")
 
 # Add a divider
 st.sidebar.markdown("---")
+
+show_repo_assistant = st.sidebar.checkbox("Show Github Repo Assistant", False)
+
+st.sidebar.markdown("## WayFinder Repo Assistant")
+st.sidebar.markdown("Github Repo Agent")
+# st.sidebar.markdown("Check the box above to show the project chat assistant.")
+
 
 # Add company info to sidebar
 st.sidebar.markdown("### WayFinder")
@@ -216,6 +224,57 @@ if show_chat_assistant:
     st.sidebar.success("Assistant Chat Enabled")
     render_dialogflow_messenger()
 
+elif show_repo_assistant:
+    st.subheader("Project Repo Assistant")
+    st.write("Use the Chat Assistant to ask questions about the project code.")
+    st.sidebar.success("Github Repo Agent Enabled")
+    
+    repo_agent_container = st.container()
+    
+    with repo_agent_container:
+        st.markdown("---")
+        st.subheader("💬 Chat with Your Repo Agent")
+        
+        # Display all past messages
+        for msg in st.session_state.messages:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
+                
+        user_input = None
+            
+        if prompt := st.chat_input("Ask any question about your code..."):
+            user_input = prompt
+                
+        if user_input :
+            st.session_state.chatMessageHistory.add_message({"role": "user", "content": user_input})
+            st.session_state.messages.append({"role": "user", "content": user_input})
+                
+            with st.chat_message("user"):
+                st.markdown(user_input)
+            
+            # Add a loading indicator
+            with st.chat_message("assistant"):
+                with st.spinner("Analyzing your code..."):
+                    try:
+                        
+                        repo_to_process = "github/codespaces-jupyter"
+                        
+                        qa = GitHubQA(repo=repo_to_process)
+                        if qa.qa: # Check if QA chain was successfully initialized
+                            ans, srcs = qa.get_answer(user_input)
+                        else:
+                            st.error(f"An error occurred: {str(e)}")
+                            st.error("QA system failed to initialize. Skipping question.")
+                        
+                        if ans:
+                            st.session_state.chatMessageHistory.add_message({"role": "assistant", "content": ans})
+                            st.session_state.messages.append({"role": "assistant", "content": ans})
+                            st.markdown(ans)
+
+                    except Exception as e:
+                        st.error(f"An error occurred: {str(e)}")
+                        st.error("Details: " + str(type(e).__name__))
+                    
 # Otherwise, run your existing code‑assistant UI:
 else:
     col1, col2 = st.columns([1, 1])
