@@ -13,6 +13,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter, Language
 from langchain.vectorstores import FAISS
 from langchain_google_vertexai import VertexAI, VertexAIEmbeddings
 from google.api_core.exceptions import GoogleAPIError, NotFound # Import specific exceptions
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ===== Configuration =====
 logging.info("Loading configuration...")

@@ -263,7 +263,6 @@ elif show_repo_assistant:
                         if qa.qa: # Check if QA chain was successfully initialized
                             ans, srcs = qa.get_answer(user_input)
                         else:
-                            st.error(f"An error occurred: {str(e)}")
                             st.error("QA system failed to initialize. Skipping question.")
                         
                         if ans:
