@@ -177,6 +177,26 @@ inject_custom_css()
 # Display logo at the top
 render_brand_logo()
 
+if 'show_chat_assistant_enabled' not in st.session_state:
+    st.session_state.show_chat_assistant_enabled = False
+if 'show_repo_assistant_enabled' not in st.session_state:
+    st.session_state.show_repo_assistant_enabled = False
+
+def toggle_chat_assistant():
+    if st.session_state.show_chat_assistant_key:
+        st.session_state.show_chat_assistant_enabled = True
+        st.session_state.show_repo_assistant_enabled = False
+    else:
+        st.session_state.show_chat_assistant_enabled = False
+
+# Function to handle checkbox 2 change
+def toggle_repo_assistant():
+    if st.session_state.show_repo_assistant_key:
+        st.session_state.show_repo_assistant_enabled = True
+        st.session_state.show_chat_assistant_enabled = False
+    else:
+        st.session_state.show_repo_assistant_enabled = False
+
 # Create a header with branded content
 st.markdown("<h1 style='text-align: center;'>Your WayFinder Code Assistant</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #A3A8B8;'>Powered by GCP to help you with code analysis and development</p>", unsafe_allow_html=True)
@@ -187,7 +207,15 @@ if "messages" not in st.session_state:
     st.session_state.chatMessageHistory = ChatMessageHistory()
 
 # Top‑level checkbox to switch modes
-show_chat_assistant = st.sidebar.checkbox("Show General Chat Assistant", False)
+show_chat_assistant = st.sidebar.checkbox("Show General Chat Assistant",
+                                          key="show_chat_assistant_key",
+                                          value=st.session_state.show_chat_assistant_enabled,
+                                          disabled=st.session_state.show_repo_assistant_enabled,
+                                          on_change=toggle_chat_assistant
+                                          )
+
+# if show_chat_assistant != st.session_state.show_chat_assistant_enabled:
+#     st.session_state.show_chat_assistant_enabled = show_chat_assistant
 
 # Add branding to sidebar
 st.sidebar.markdown("## WayFinder Chat")
@@ -197,7 +225,15 @@ st.sidebar.markdown("Chat Assistant Agent")
 # Add a divider
 st.sidebar.markdown("---")
 
-show_repo_assistant = st.sidebar.checkbox("Show Github Repo Assistant", False)
+show_repo_assistant = st.sidebar.checkbox("Show Github Repo Assistant",
+                                          key="show_repo_assistant_key",
+                                          value=st.session_state.show_repo_assistant_enabled,
+                                          disabled=st.session_state.show_chat_assistant_enabled,
+                                          on_change=toggle_repo_assistant
+                                          )
+
+# if show_repo_assistant != st.session_state.show_chat_assistant_enabled:
+#     st.session_state.show_chat_assistant_enabled = show_repo_assistant
 
 st.sidebar.markdown("## WayFinder Repo Assistant")
 st.sidebar.markdown("Github Repo Agent")
@@ -229,6 +265,11 @@ elif show_repo_assistant:
     st.write("Use the Chat Assistant to ask questions about the project code.")
     st.sidebar.success("Github Repo Agent Enabled")
     
+    github_repo = st.text_input("Github Repo URL", placeholder="github/codespaces-jupyter")
+
+    if github_repo == "":
+        st.info("Please insert Github Repo.")
+    
     repo_agent_container = st.container()
     
     with repo_agent_container:
@@ -243,9 +284,13 @@ elif show_repo_assistant:
         user_input = None
             
         if prompt := st.chat_input("Ask any question about your code..."):
-            user_input = prompt
+            if github_repo == "":
+                with st.chat_message("assistant"):
+                    st.warning("Please insert Github Repo before asking questions.")
+            else:
+                user_input = prompt
                 
-        if user_input :
+        if user_input and github_repo:
             st.session_state.chatMessageHistory.add_message({"role": "user", "content": user_input})
             st.session_state.messages.append({"role": "user", "content": user_input})
                 
@@ -257,9 +302,7 @@ elif show_repo_assistant:
                 with st.spinner("Analyzing your code..."):
                     try:
                         
-                        repo_to_process = "github/codespaces-jupyter"
-                        
-                        qa = GitHubQA(repo=repo_to_process)
+                        qa = GitHubQA(repo=github_repo)
                         if qa.qa: # Check if QA chain was successfully initialized
                             ans, srcs = qa.get_answer(user_input)
                         else:
@@ -274,16 +317,15 @@ elif show_repo_assistant:
                         st.error(f"An error occurred: {str(e)}")
                         st.error("Details: " + str(type(e).__name__))
                     
-# Otherwise, run your existing code‑assistant UI:
 else:
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns(2)
     
     # st.subheader("Code Analysis")
     # st.write("Upload your code file and type a question to analyze it using our advanced AI model:")
     
     with col1:
         st.subheader("Upload a file")
-        uploaded_file = st.file_uploader("Choose a file", type=["txt", "py", "js", "html", "css", "java", "cpp"])
+        uploaded_file = st.file_uploader("Choose a file", type=["txt", "py"])
         
         if uploaded_file is not None:
             code = uploaded_file.read().decode("utf-8")
