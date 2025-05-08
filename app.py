@@ -7,8 +7,8 @@ from core import GitHubQA
 # GCP LLM Configurations using Google API key and goog.egenerativeai
 # --------------------
 import google.generativeai as genai
-GOOGLE_API_KEY = "AIzaSyATIUK_dvY0rg_FONGW1668--IwlMrFVyo"
-GOOGLE_PROJECT = "analog-grin-455718-i4"
+GOOGLE_API_KEY = ""
+GOOGLE_PROJECT = ""
 GOOGLE_LOCATION = "us-central1"
 genai.configure(api_key=GOOGLE_API_KEY)
 # --------------------
