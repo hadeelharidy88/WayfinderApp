@@ -206,6 +206,11 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
     st.session_state.chatMessageHistory = ChatMessageHistory()
     
+    
+st.sidebar.markdown("### WayFinder")
+st.sidebar.markdown("Deloitte WayFinder: Navigating Developers Through Project Phases with AI Precision.")
+st.sidebar.markdown("---")
+    
 st.sidebar.markdown("## Onboarding Assistant")
 # st.sidebar.markdown("Chat Assistant Agent")
 # st.sidebar.markdown("Check the box above to show the project chat assistant.")
@@ -238,16 +243,15 @@ show_repo_assistant = st.sidebar.checkbox("Show Github Assistant",
 # if show_repo_assistant != st.session_state.show_chat_assistant_enabled:
 #     st.session_state.show_chat_assistant_enabled = show_repo_assistant
 
+st.sidebar.markdown("---")
 
 # Add company info to sidebar
-st.sidebar.markdown("### WayFinder")
-st.sidebar.markdown("Deloitte WayFinders powered by GCP AI technologies to help developers find their way through different project phases.")
-st.sidebar.markdown("---")
+
 st.sidebar.markdown(
     """
     <div style="text-align: center; color: #A3A8B8; padding: 20px;">
         <p>© 2025 Deloitte WayFinders. All rights reserved.</p>
-        <p>Built with GCP technologies</p>
+        <p>Built With GCP Technologies</p>
     </div>
     """,
     unsafe_allow_html=True
