@@ -166,7 +166,7 @@ def create_prompt(code, question):
 
 # Streamlit page setup
 st.set_page_config(
-    page_title="🤖 Your WayFinder AI Code Assistant",
+    page_title="🤖 Your WayFinder",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -198,16 +198,20 @@ def toggle_repo_assistant():
         st.session_state.show_repo_assistant_enabled = False
 
 # Create a header with branded content
-st.markdown("<h1 style='text-align: center;'>Your WayFinder Code Assistant</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>Your WayFinder</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #A3A8B8;'>Powered by GCP to help you with code analysis and development</p>", unsafe_allow_html=True)
 
 # Init chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
     st.session_state.chatMessageHistory = ChatMessageHistory()
+    
+st.sidebar.markdown("## Onboarding Assistant")
+# st.sidebar.markdown("Chat Assistant Agent")
+# st.sidebar.markdown("Check the box above to show the project chat assistant.")
 
 # Top‑level checkbox to switch modes
-show_chat_assistant = st.sidebar.checkbox("Show General Chat Assistant",
+show_chat_assistant = st.sidebar.checkbox("Show Onboarding Assistant",
                                           key="show_chat_assistant_key",
                                           value=st.session_state.show_chat_assistant_enabled,
                                           disabled=st.session_state.show_repo_assistant_enabled,
@@ -217,15 +221,14 @@ show_chat_assistant = st.sidebar.checkbox("Show General Chat Assistant",
 # if show_chat_assistant != st.session_state.show_chat_assistant_enabled:
 #     st.session_state.show_chat_assistant_enabled = show_chat_assistant
 
-# Add branding to sidebar
-st.sidebar.markdown("## WayFinder Chat")
-st.sidebar.markdown("Chat Assistant Agent")
-# st.sidebar.markdown("Check the box above to show the project chat assistant.")
-
 # Add a divider
 st.sidebar.markdown("---")
 
-show_repo_assistant = st.sidebar.checkbox("Show Github Repo Assistant",
+st.sidebar.markdown("## Github Assistant")
+# st.sidebar.markdown("Github Repo Agent")
+# st.sidebar.markdown("Check the box above to show the project chat assistant.")
+
+show_repo_assistant = st.sidebar.checkbox("Show Github Assistant",
                                           key="show_repo_assistant_key",
                                           value=st.session_state.show_repo_assistant_enabled,
                                           disabled=st.session_state.show_chat_assistant_enabled,
@@ -235,14 +238,10 @@ show_repo_assistant = st.sidebar.checkbox("Show Github Repo Assistant",
 # if show_repo_assistant != st.session_state.show_chat_assistant_enabled:
 #     st.session_state.show_chat_assistant_enabled = show_repo_assistant
 
-st.sidebar.markdown("## WayFinder Repo Assistant")
-st.sidebar.markdown("Github Repo Agent")
-# st.sidebar.markdown("Check the box above to show the project chat assistant.")
-
 
 # Add company info to sidebar
 st.sidebar.markdown("### WayFinder")
-st.sidebar.markdown("Deloitte WayFinders powered by GCP AI technologies to help developers get answers about project history and to guide them on their coding tasks.")
+st.sidebar.markdown("Deloitte WayFinders powered by GCP AI technologies to help developers find their way through different project phases.")
 st.sidebar.markdown("---")
 st.sidebar.markdown(
     """
@@ -255,15 +254,15 @@ st.sidebar.markdown(
 )
 
 if show_chat_assistant:
-    st.subheader("Project Chat Assistant")
-    st.write("Use the Chat Assistant to ask questions about the project.")
-    st.sidebar.success("Assistant Chat Enabled")
+    st.subheader("Onboarding Assistant")
+    st.write("Use the Onboarding Assistant to ask questions about the project documentations.")
+    st.sidebar.success("Onboarding Assistant Enabled")
     render_dialogflow_messenger()
 
 elif show_repo_assistant:
-    st.subheader("Project Repo Assistant")
-    st.write("Use the Chat Assistant to ask questions about the project code.")
-    st.sidebar.success("Github Repo Agent Enabled")
+    st.subheader("Github Assistant")
+    st.write("Use the Github Assistant to ask questions about the project code.")
+    st.sidebar.success("Github Assistant Enabled")
     
     github_repo = st.text_input("Github Repo URL", placeholder="github/codespaces-jupyter")
 
@@ -274,7 +273,7 @@ elif show_repo_assistant:
     
     with repo_agent_container:
         st.markdown("---")
-        st.subheader("💬 Chat with Your Repo Agent")
+        st.subheader("💬 Chat with Github Assistant")
         
         # Display all past messages
         for msg in st.session_state.messages:
@@ -349,7 +348,7 @@ else:
     with chat_container:
         # Display a divider
         st.markdown("---")
-        st.subheader("💬 Chat with Your AI Assistant")
+        st.subheader("💬 Chat with Genie")
         
         # Display all past messages
         for msg in st.session_state.messages:
